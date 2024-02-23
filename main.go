@@ -118,6 +118,29 @@ func move(state GameState) BattlesnakeMoveResponse {
 		}
 	}
 
+	if len(isMoveSafe) > 0 {
+		movesToClosedSpace := ClosedSpaceMoves(state, isMoveSafe)
+		if len(movesToClosedSpace) > 0 {
+			saveMovesCount := 0
+			for _, safe := range isMoveSafe {
+				if safe {
+					saveMovesCount++
+				}
+			}
+			if len(movesToClosedSpace) < saveMovesCount {
+				//avoid any unsafe move
+				for _, move := range movesToClosedSpace {
+					isMoveSafe[move.Move] = false
+				}
+			} else {
+				//keep only move to the widest space
+				for _, move := range movesToClosedSpace[1:] {
+					isMoveSafe[move.Move] = false
+				}
+			}
+		}
+	}
+
 	// Are there any safe moves left?
 	safeMoves := []string{}
 	for move, isSafe := range isMoveSafe {
