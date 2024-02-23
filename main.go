@@ -96,11 +96,24 @@ func move(state GameState) BattlesnakeMoveResponse {
 	}
 
 	// TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
+	otherHeads := map[Coord]int{}
 	opponents := state.Board.Snakes
 	for _, op := range opponents {
 		for _, coord := range op.Body {
 			if step, blocks := coordBlocksMove(myHead, coord); blocks {
 				isMoveSafe[step] = false
+			}
+		}
+
+		// Collect opponents heads location
+		otherHeads[op.Head] = op.Length
+	}
+
+	// TODO: Prevent head collisions
+	for move, isSafe := range isMoveSafe {
+		if isSafe {
+			if isHeadsCollisionMove(move, myHead, state.You.Length, otherHeads) {
+				isMoveSafe[move] = false
 			}
 		}
 	}
@@ -146,6 +159,37 @@ func coordBlocksMove(head, coord Coord) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+func isHeadsCollisionMove(move string, myHead Coord, myLen int, heads map[Coord]int) bool {
+	var target Coord
+
+	switch move {
+	case "up":
+		target = Coord{X: myHead.X, Y: myHead.Y + 1}
+	case "down":
+		target = Coord{X: myHead.X, Y: myHead.Y - 1}
+	case "left":
+		target = Coord{X: myHead.X - 1, Y: myHead.Y}
+	case "right":
+		target = Coord{X: myHead.X + 1, Y: myHead.Y}
+	}
+
+	for enemy, length := range heads {
+		if enemy.Y == target.Y && (enemy.X-target.X == 1) || (enemy.X-target.X == -1) {
+			if length >= myLen {
+				return true
+			}
+		}
+
+		if enemy.X == target.X && (enemy.Y-target.Y == 1) || (enemy.Y-target.Y == -1) {
+			if length >= myLen {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func main() {
