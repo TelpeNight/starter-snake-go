@@ -106,8 +106,10 @@ func move(state GameState) BattlesnakeMoveResponse {
 			}
 		}
 
-		// Collect opponents heads location
-		otherHeads[op.Head] = op.Length
+		if op.ID != state.You.ID {
+			// Collect opponents heads location
+			otherHeads[op.Head] = op.Length
+		}
 	}
 
 	// TODO: Prevent head collisions
