@@ -25,8 +25,8 @@ func info() BattlesnakeInfoResponse {
 
 	return BattlesnakeInfoResponse{
 		APIVersion: "1",
-		Author:     "",        // TODO: Your Battlesnake username
-		Color:      "#888888", // TODO: Choose color
+		Author:     "Team7",   // TODO: Your Battlesnake username
+		Color:      "#02d9e8", // TODO: Choose color
 		Head:       "default", // TODO: Choose head
 		Tail:       "default", // TODO: Choose tail
 	}
@@ -72,14 +72,38 @@ func move(state GameState) BattlesnakeMoveResponse {
 	}
 
 	// TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
-	// boardWidth := state.Board.Width
-	// boardHeight := state.Board.Height
+	boardWidth := state.Board.Width
+	boardHeight := state.Board.Height
+	if myHead.X == 0 {
+		isMoveSafe["left"] = false
+	}
+	if myHead.X == boardWidth-1 {
+		isMoveSafe["right"] = false
+	}
+	if myHead.Y == 0 {
+		isMoveSafe["down"] = false
+	}
+	if myHead.Y == boardHeight-1 {
+		isMoveSafe["up"] = false
+	}
 
 	// TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-	// mybody := state.You.Body
+	mybody := state.You.Body
+	for _, coord := range mybody {
+		if step, blocks := coordBlocksMove(myHead, coord); blocks {
+			isMoveSafe[step] = false
+		}
+	}
 
 	// TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
-	// opponents := state.Board.Snakes
+	opponents := state.Board.Snakes
+	for _, op := range opponents {
+		for _, coord := range op.Body {
+			if step, blocks := coordBlocksMove(myHead, coord); blocks {
+				isMoveSafe[step] = false
+			}
+		}
+	}
 
 	// Are there any safe moves left?
 	safeMoves := []string{}
@@ -102,6 +126,26 @@ func move(state GameState) BattlesnakeMoveResponse {
 
 	log.Printf("MOVE %d: %s\n", state.Turn, nextMove)
 	return BattlesnakeMoveResponse{Move: nextMove}
+}
+
+func coordBlocksMove(head, coord Coord) (string, bool) {
+	if head.X == coord.X {
+		if head.Y+1 == coord.Y {
+			return "up", true
+		}
+		if head.Y-1 == coord.Y {
+			return "down", true
+		}
+	}
+	if head.Y == coord.Y {
+		if head.X+1 == coord.X {
+			return "right", true
+		}
+		if head.X-1 == coord.X {
+			return "left", true
+		}
+	}
+	return "", false
 }
 
 func main() {
