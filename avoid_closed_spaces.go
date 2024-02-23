@@ -31,7 +31,7 @@ func ClosedSpaceMoves(state GameState, testMoves map[string]bool) []MoveToClosed
 		if !test {
 			continue
 		}
-		nextCoord := getNextCooed(state.You.Head, step)
+		nextCoord := getNextCoord(state.You.Head, step)
 		reachableCellsCount := getReachableCellsCount(nextCoord, state.Board, obstSet)
 		if reachableCellsCount == freeCellsCount {
 			//not closed
@@ -48,7 +48,7 @@ func ClosedSpaceMoves(state GameState, testMoves map[string]bool) []MoveToClosed
 	return result
 }
 
-func getNextCooed(head Coord, step string) Coord {
+func getNextCoord(head Coord, step string) Coord {
 	switch step {
 	case "up":
 		return Coord{

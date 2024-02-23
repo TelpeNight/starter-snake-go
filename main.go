@@ -123,7 +123,7 @@ func move(state GameState) BattlesnakeMoveResponse {
 		isMoveSafe = movesWithoutHeadCollisions
 	}
 
-	if len(isMoveSafe) > 0 {
+	if haveSafeMoves(isMoveSafe) {
 		movesToClosedSpace := ClosedSpaceMoves(state, isMoveSafe)
 		if len(movesToClosedSpace) > 0 {
 			saveMovesCount := 0
@@ -161,6 +161,12 @@ func move(state GameState) BattlesnakeMoveResponse {
 
 	// Choose a random move from the safe ones
 	nextMove := safeMoves[rand.Intn(len(safeMoves))]
+	if len(safeMoves) > 1 {
+		closestFood, ok := findClosedFood(state.You.Head, state.Board)
+		if ok {
+			nextMove = stepToClosestFood(state.You.Head, closestFood, nextMove, safeMoves)
+		}
+	}
 
 	// TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
 	// food := state.Board.Food
