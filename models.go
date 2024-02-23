@@ -1,11 +1,19 @@
 package main
 
+import "math"
+
 // API Objects
 // https://docs.battlesnake.com/api
 
 type Coord struct {
 	X int `json:"x"`
 	Y int `json:"y"`
+}
+
+func (p Coord) Distance(p2 Coord) float64 {
+	first := math.Pow(float64(p2.X-p.X), 2)
+	second := math.Pow(float64(p2.Y-p.Y), 2)
+	return math.Sqrt(first + second)
 }
 
 type Battlesnake struct {

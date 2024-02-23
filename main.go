@@ -178,6 +178,40 @@ func haveSafeMoves(moves map[string]bool) bool {
 	return false
 }
 
+func closestDistance(foods []Coord, head Coord) Coord {
+	closest := foods[0]
+	shortest := head.Distance(foods[0])
+
+	for _, f := range foods {
+		newDistance := head.Distance(f)
+		if newDistance < shortest {
+			shortest = newDistance
+			closest = f
+		}
+	}
+
+	return closest
+}
+
+func moveTowards(towards, head Coord, moves map[string]bool) string {
+	horizontalDistance := towards.X - head.X
+	verticalDistance := towards.Y - head.Y
+
+	if horizontalDistance > 0 && moves["right"] {
+		return "right"
+	} else if horizontalDistance < 0 && moves["left"] {
+		return "left"
+	}
+
+	if verticalDistance > 0 && moves["down"] {
+		return "down"
+	} else if verticalDistance < 0 && moves["up"] {
+		return "up"
+	}
+
+	return ""
+}
+
 func coordBlocksMove(head, coord Coord) (string, bool) {
 	if head.X == coord.X {
 		if head.Y+1 == coord.Y {
