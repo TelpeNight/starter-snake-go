@@ -14,6 +14,7 @@ package main
 
 import (
 	"log"
+	"maps"
 	"math/rand"
 )
 
@@ -110,12 +111,16 @@ func move(state GameState) BattlesnakeMoveResponse {
 	}
 
 	// TODO: Prevent head collisions
-	for move, isSafe := range isMoveSafe {
+	movesWithoutHeadCollisions := maps.Clone(isMoveSafe)
+	for move, isSafe := range movesWithoutHeadCollisions {
 		if isSafe {
 			if isHeadsCollisionMove(move, myHead, state.You.Length, otherHeads) {
-				isMoveSafe[move] = false
+				movesWithoutHeadCollisions[move] = false
 			}
 		}
+	}
+	if haveSafeMoves(movesWithoutHeadCollisions) {
+		isMoveSafe = movesWithoutHeadCollisions
 	}
 
 	if len(isMoveSafe) > 0 {
@@ -162,6 +167,15 @@ func move(state GameState) BattlesnakeMoveResponse {
 
 	log.Printf("MOVE %d: %s\n", state.Turn, nextMove)
 	return BattlesnakeMoveResponse{Move: nextMove}
+}
+
+func haveSafeMoves(moves map[string]bool) bool {
+	for _, safe := range moves {
+		if safe {
+			return true
+		}
+	}
+	return false
 }
 
 func coordBlocksMove(head, coord Coord) (string, bool) {
