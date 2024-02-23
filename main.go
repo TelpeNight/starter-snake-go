@@ -213,13 +213,13 @@ func isHeadsCollisionMove(move string, myHead Coord, myLen int, heads map[Coord]
 	}
 
 	for enemy, length := range heads {
-		if enemy.Y == target.Y && (enemy.X-target.X == 1) || (enemy.X-target.X == -1) {
+		if enemy.Y == target.Y && (enemy.X-target.X == 1 || enemy.X-target.X == -1) {
 			if length >= myLen {
 				return true
 			}
 		}
 
-		if enemy.X == target.X && (enemy.Y-target.Y == 1) || (enemy.Y-target.Y == -1) {
+		if enemy.X == target.X && (enemy.Y-target.Y == 1 || enemy.Y-target.Y == -1) {
 			if length >= myLen {
 				return true
 			}
